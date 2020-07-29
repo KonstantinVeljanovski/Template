@@ -1,0 +1,136 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://StyleManager.res" type="Material" id=1]
+[ext_resource path="res://CustomNodes/Augmentation.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Sprites/dot-transparent-png-6.png" type="Texture" id=4]
+[ext_resource path="res://Scripts/3DMode.gd" type="Script" id=6]
+[ext_resource path="res://Scripts/ARController.gd" type="Script" id=9]
+[ext_resource path="res://CustomNodes/Gizmos.tscn" type="PackedScene" id=10]
+[ext_resource path="res://CustomNodes/UI.tscn" type="PackedScene" id=11]
+
+[sub_resource type="Environment" id=1]
+background_mode = 6
+ambient_light_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="PlaneMesh" id=2]
+
+[sub_resource type="SpatialMaterial" id=3]
+flags_transparent = true
+flags_unshaded = true
+flags_ensure_correct_normals = true
+params_cull_mode = 2
+albedo_texture = ExtResource( 4 )
+uv1_scale = Vector3( 5, 5, 5 )
+
+[sub_resource type="ProceduralSky" id=4]
+
+[sub_resource type="Environment" id=5]
+background_mode = 3
+background_sky = SubResource( 4 )
+background_color = Color( 0.411765, 0.411765, 0.411765, 1 )
+fog_enabled = true
+fog_color = Color( 0.247059, 0.247059, 0.247059, 1 )
+fog_sun_color = Color( 0, 0, 0, 1 )
+fog_sun_amount = 0.13
+fog_depth_end = 30.0
+tonemap_mode = 2
+
+[sub_resource type="ButtonGroup" id=6]
+
+[sub_resource type="StyleBoxFlat" id=7]
+bg_color = Color( 1, 1, 1, 1 )
+
+[node name="Master" type="Node"]
+
+[node name="AR Controller" type="Spatial" parent="."]
+script = ExtResource( 9 )
+arSDK = "ARCore"
+
+[node name="WorldOrigin" type="ARVROrigin" parent="AR Controller"]
+
+[node name="ARVRCamera" type="ARVRCamera" parent="AR Controller/WorldOrigin"]
+environment = SubResource( 1 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="AR Controller"]
+transform = Transform( -0.294781, -0.298836, 0.907635, 0.210165, 0.906308, 0.366657, -0.932167, 0.298836, -0.204358, 2.42377, 2.52296, -6.24252 )
+light_energy = 3.0
+directional_shadow_blend_splits = true
+
+[node name="World" type="Spatial" parent="."]
+
+[node name="3D" type="Spatial" parent="World"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6 )
+
+[node name="Grid" type="MeshInstance" parent="World/3D"]
+transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0 )
+mesh = SubResource( 2 )
+material/0 = SubResource( 3 )
+
+[node name="Pivot" type="Spatial" parent="World/3D"]
+script = ExtResource( 6 )
+
+[node name="Model" type="Spatial" parent="World/3D/Pivot"]
+
+[node name="Augmentation" parent="World/3D/Pivot/Model" instance=ExtResource( 2 )]
+
+[node name="Orbit" type="Spatial" parent="World/3D/Pivot"]
+
+[node name="X" type="Spatial" parent="World/3D/Pivot/Orbit"]
+
+[node name="Y" type="Spatial" parent="World/3D/Pivot/Orbit/X"]
+
+[node name="Z" type="Spatial" parent="World/3D/Pivot/Orbit/X/Y"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
+
+[node name="3DMode" type="Camera" parent="World/3D/Pivot/Orbit/X/Y/Z"]
+environment = SubResource( 5 )
+current = true
+
+[node name="Gizmos" parent="World/3D" instance=ExtResource( 10 )]
+transform = Transform( 1.31567, 0, 0, 0, 1.31567, 0, 0, 0, 1.31567, 0, 0, 0 )
+
+[node name="X" parent="World/3D/Gizmos/Rotate" index="0"]
+material/0 = null
+
+[node name="Y" parent="World/3D/Gizmos/Rotate" index="1"]
+material/0 = null
+
+[node name="Z" parent="World/3D/Gizmos/Rotate" index="2"]
+material/0 = null
+
+[node name="Misc" type="Node" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Misc"]
+
+[node name="UI" parent="." instance=ExtResource( 11 )]
+mouse_filter = 2
+
+[node name="Pan" parent="UI/3DMode" index="0"]
+group = SubResource( 6 )
+
+[node name="Tilt" parent="UI/3DMode" index="1"]
+group = SubResource( 6 )
+
+[node name="Zoom" parent="UI/3DMode" index="2"]
+group = SubResource( 6 )
+
+[node name="Anchor" parent="UI/ARMode" index="1"]
+pressed = true
+
+[node name="InfoPanel" parent="UI" index="4"]
+material = ExtResource( 1 )
+custom_styles/panel = SubResource( 7 )
+[connection signal="pressed" from="UI/3DMode/Pan" to="World/3D/Pivot" method="_changeMode" binds= [ "Pan" ]]
+[connection signal="pressed" from="UI/3DMode/Tilt" to="World/3D/Pivot" method="_changeMode" binds= [ "Tilt" ]]
+[connection signal="pressed" from="UI/3DMode/Zoom" to="World/3D/Pivot" method="_changeMode" binds= [ "Zoom" ]]
+[connection signal="pressed" from="UI/ARMode/Gizmos/GizmoContainer/Move" to="World/3D/Gizmos" method="show_current_gizmo" binds= [ "Move" ]]
+[connection signal="pressed" from="UI/ARMode/Gizmos/GizmoContainer/Rotate" to="World/3D/Gizmos" method="show_current_gizmo" binds= [ "Rotate" ]]
+[connection signal="pressed" from="UI/ARMode/Gizmos/GizmoContainer/Scale" to="World/3D/Gizmos" method="show_current_gizmo" binds= [ "Scale" ]]
+[connection signal="toggled" from="UI/ARMode/Gizmos/Gizmo" to="World/3D/Gizmos" method="_toggleGizmo"]
+[connection signal="toggled" from="UI/ARMode/Anchor" to="AR Controller" method="_toggleAnchors"]
+[connection signal="toggled" from="UI/SettingsToggle/3Dmode" to="AR Controller" method="_toggleAR"]
+[connection signal="pressed" from="UI/NextButton" to="World/3D/Pivot/Model/Augmentation" method="_nextStep"]
+
+[editable path="World/3D/Gizmos"]
+
+[editable path="UI"]

@@ -1,0 +1,120 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Sprites/Default/WorxARLogo.png" type="Texture" id=1]
+[ext_resource path="res://Sprites/Default/Start.png" type="Texture" id=2]
+[ext_resource path="res://StyleManager.res" type="Material" id=3]
+[ext_resource path="res://autoload/ApplicationManager.gd" type="Script" id=4]
+[ext_resource path="res://Scenes/PlexusBackground.tscn" type="PackedScene" id=5]
+
+[sub_resource type="Gradient" id=4]
+colors = PoolColorArray( 1, 1, 1, 1, 0, 0, 0, 1 )
+
+[sub_resource type="GradientTexture" id=5]
+gradient = SubResource( 4 )
+
+[sub_resource type="StyleBoxTexture" id=6]
+texture = SubResource( 5 )
+region_rect = Rect2( 0, 0, 2048, 1 )
+
+[sub_resource type="DynamicFontData" id=2]
+font_path = "res://Misc/Fonts/SourceSansPro-Regular.ttf"
+
+[sub_resource type="DynamicFont" id=3]
+size = 120
+font_data = SubResource( 2 )
+
+[node name="Master" type="Node"]
+script = ExtResource( 4 )
+
+[node name="UI" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Background" type="Panel" parent="UI"]
+material = ExtResource( 3 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 0.578212
+margin_right = 0.578125
+custom_styles/panel = SubResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlexusBackground" parent="UI" instance=ExtResource( 5 )]
+maxDots = 70
+
+[node name="ButtonContainer" type="VBoxContainer" parent="UI"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -324.422
+margin_top = -124.013
+margin_right = 327.578
+margin_bottom = 351.987
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 25
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ARScene" type="Control" parent="UI/ButtonContainer"]
+margin_right = 651.0
+margin_bottom = 476.0
+rect_min_size = Vector2( 0, 150 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Button" type="TextureButton" parent="UI/ButtonContainer/ARScene"]
+material = ExtResource( 3 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 11
+size_flags_vertical = 3
+texture_normal = ExtResource( 2 )
+expand = true
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Logo" type="TextureRect" parent="UI"]
+self_modulate = Color( 1, 1, 1, 0.721569 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -1082.17
+margin_top = -197.682
+margin_right = -654.172
+margin_bottom = -39.6825
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="UI"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -572.422
+margin_top = 111.503
+margin_right = 573.578
+margin_bottom = 362.503
+custom_fonts/font = SubResource( 3 )
+text = "Application Name"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="UI/ButtonContainer/ARScene/Button" to="." method="_loadScene" binds= [ "ARScene.tscn" ]]
